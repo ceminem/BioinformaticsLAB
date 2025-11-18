@@ -6,4 +6,4 @@ When importing data, be care of the data frame. If there is one column with only
 
 For data_frames (which are basically tables), be care to put the x-value (rows) first and then the y-value(coloumn)!
 
-First comment from Simon
+First comment from Simon (haha fck u simon)
