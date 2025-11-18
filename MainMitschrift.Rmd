@@ -1,0 +1,7 @@
+18.11.
+
+Be care of your working directory. R can only search within this working directory for your data/folders!
+
+When importing data, be care of the data frame. If there is one column with only integers, it will surely give make it an integer coloumn. But if there is mixed data, it will all transform into characters!
+
+For data_frames (which are basically tables), be care to put the x-value (rows) first and then the y-value(coloumn)!
