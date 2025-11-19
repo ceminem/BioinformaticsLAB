@@ -7,3 +7,9 @@ When importing data, be care of the data frame. If there is one column with only
 For data_frames (which are basically tables), be care to put the x-value (rows) first and then the y-value(coloumn)!
 
 First comment from Simon (haha fck u simon)
+
+19.11.
+
+simon is now able to push push push something to git (yeah)
+
+For reading in csv data with the read.genbank function, be care of what sequence you want to look at, you need to define it in the function with the "type" argument (default is nucleotides, if you look for AA you need to tell it type = "AA")
