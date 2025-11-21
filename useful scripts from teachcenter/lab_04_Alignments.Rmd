@@ -81,8 +81,8 @@ RAG2_clustalo <- as.DNAbin(RAG2_clustalo)
 RAG2_muscle <- msaMuscle("data/RAG2_raw.fasta", type="dna")
 RAG2_muscle <- as.DNAbin(RAG2_muscle)
 
-write.FASTA(RAG2_muscle, file="data/RAG2_muscle.fasta")
-write.FASTA(RAG2_clustalo, file="data/RAG2_clustalo.fasta")
+write.FASTA(TTR_muscle, file="data/TTR_muscle.fasta")
+write.FASTA(TTR_clustalo, file="data/TTR_clustalo.fasta")
 ```
 
 ## Visualizing multiple sequence alignments in R
