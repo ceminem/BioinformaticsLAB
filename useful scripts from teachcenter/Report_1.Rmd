@@ -1,0 +1,113 @@
+---
+title: "Report 1"
+author: "Klaus Schliep"
+date: "2025-11-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(ape))
+suppressPackageStartupMessages(library(phangorn))
+suppressPackageStartupMessages(library(msa))
+```
+
+
+
+## Report Guidelines
+### The front page has to include:
+* Your Names (Groups up to 3)
+* Your matriculation numbers
+* Name of the Report/Lab
+
+### The Report has to include:
+* Answers to questions below.
+* Answer the questions in full sentences
+* Add relevant plots and tables and describe how you got your results.
+* Include the function and the variables/data objects you used, or the field name of the output
+* Include relevant plots/figures (you can either use screenshots )
+* Plots and tables need to have a capture describing what is shown.(E.g.: Figure
+1: Dotplot of the ORA analysis, showing the 10 most significantly
+overrepresented biological processes within downregulated genes.)
+
+### Expected Format:
+* 1 PDF file and maybe additionally an R / Rmarkdown file. 
+* Only one person has to hand in the report per group
+* (You can use a program of your choice to generate this e.g. Microsoft Word or R/ R markdown)
+
+
+For further questions, write me an email or find me on the 5th floor of Petersgasse 14,
+Room BK04060 (Tue, Thu, Fr).
+
+
+
+
+## Questions
+
+We will go through he process of a phyloigenetic analysis: 
+![](phylogenetics_workflow.png)
+
+We will use the data FAP, we briefly used before.
+
+
+1.  First search on NCBI for additional FAP sequences with Blastp using the accession number `XP_001703004`. Download 25 additional sequences and save them in the folder data_raw as FAP_BLAST.fas. 
+ 
+2. Read in the data and combine the two unaligned data sets: 
+You can either do this in R or add the sequences in a file together.  
+
+```{R}
+library(ape)
+library(phangorn)
+library(msa)
+FAP <- read.FASTA("data_raw/FAP_genbank.fas")
+FAP_blast <- read.FASTA("data_raw/FAP_BLAST.fas") 
+
+FAP_all <- c(FAP, FAP_blast)
+```
+There might be duplicated sequences in the `FAP_all` object. 
+Delete the duplicates and save the file in the data folder as file `FAP_all.fas`. 
+How many duplicated sequences did you have in your file?
+```
+duplicated(FAP_all)
+FAP_all <- FAP_all[!duplicated(FAP_all)]
+write.FASTA(..., ...)
+```
+
+
+2. Align the sequences: 
+
+You can either do this in R or online [https://www.ebi.ac.uk/jdispatcher/msa](https://www.ebi.ac.uk/jdispatcher/msa)
+```
+FAP_aligned <- msaClustalOmega(...)  
+FAP_aligned <- as.AAbin(FAP_aligned)
+write.FASTA(FAP_aligned, "data/FAP_aligned.fas")
+```
+
+
+3. Phylogenetic Analysis
+
+First perform modelTest:
+```
+FAP_pd <- read.phyDat("data/FAP_aligned.fas", format= ..., type= ...)
+mt <- modelTest(FAP_pd)
+fit <- pml_bb(mt)
+```
+
+* What is the best fitting model?
+
+* plot the maximum likelihood tree!
+
+
+
+4. Extra
+
+Perform a phylogenetic analysis with [iqtree](http://iqtree.cibiv.univie.ac.at/). 
+
+* Are the models of phangorn and iqtree the same?
+* How do the ML trees differ?  
+
+
+
+
