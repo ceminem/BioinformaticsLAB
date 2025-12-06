@@ -1,0 +1,92 @@
+---
+title: "Task 2: Microbiome Analysis and Protein Structure Prediction"
+author: 'Simon Safron [Mn: 11923407], Alexander Veith [Mn: 12122739], Miriam Überbacher [Mn:01627576]'
+date: "`r Sys.Date()`"
+#bibliography: packages.bib
+nocite: '@*'
+output:
+  pdf_document:
+    extra_dependencies: ["float"]
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    fig_width: 7
+    fig_height: 5
+    fig_caption: true
+    keep_tex: false
+  html_document:
+    toc: true
+    toc_depth: '2'
+    df_print: paged
+fontsize: 11pt
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H"
+)
+
+knitr::write_bib(c("TreeSummarizedExperiment", "scater", "mia", "miaViz", 
+              "patchwork", "vegan", "ggplot2", "tidyverse", "ape", "phangorn", "msa"), file = 'packages2.bib')
+
+```
+
+##Installing Required Packages (if not already installed):
+
+```{r install_packages, eval=FALSE}
+packages <- c("TreeSummarizedExperiment", "scater", "mia", "miaViz", 
+              "patchwork", "vegan", "ggplot2", "tidyverse", "ape", "phangorn", "msa", "bluster")
+
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    if (pkg %in% c("TreeSummarizedExperiment", "scater", "mia", "miaViz")) {
+      # BiocManager packages
+      if (!requireNamespace("BiocManager", quietly = TRUE)) {
+        install.packages("BiocManager")
+      }
+      BiocManager::install(pkg, quietly = TRUE)
+    } else {
+      # CRAN packages
+      install.packages(pkg, quietly = TRUE)
+    }
+  }
+}
+
+cat("All packages installed successfully!\n")
+```
+
+
+##Then load the required packages:
+```{r load_libraries, eval=FALSE}
+library(scater)
+library(mia)
+library(miaViz)
+library(patchwork)
+library(vegan)
+library(ggplot2)
+library(tidyverse)
+
+```
+
+##First we import our data:
+```{r}
+featureTableFile <- "data2/table.qza"
+taxonomyTableFile <- "data/taxonomy.qza"
+sampleMetaFile <- "data2/metadata.tsv"
+phyTreeFile <- "data2/16s_rooted_tree.qza"
+
+tse <- importQIIME2(
+  featureTableFile = featureTableFile,
+  taxonomyTableFile = taxonomyTableFile,
+  sampleMetaFile = sampleMetaFile,
+  phyTreeFile = phyTreeFile
+)
+
+tse
+```
+
