@@ -5,6 +5,10 @@ date: "`r Sys.Date()`"
 #bibliography: packages.bib
 nocite: '@*'
 output:
+  html_document:
+    toc: true
+    toc_depth: '2'
+    df_print: paged
   pdf_document:
     extra_dependencies: ["float"]
     toc: true
@@ -14,10 +18,6 @@ output:
     fig_height: 5
     fig_caption: true
     keep_tex: false
-  html_document:
-    toc: true
-    toc_depth: '2'
-    df_print: paged
 fontsize: 11pt
 geometry: margin=1in
 ---
@@ -40,7 +40,7 @@ knitr::write_bib(c("TreeSummarizedExperiment", "scater", "mia", "miaViz",
 
 ```{r install_packages, eval=FALSE}
 packages <- c("TreeSummarizedExperiment", "scater", "mia", "miaViz", 
-              "patchwork", "vegan", "ggplot2", "tidyverse", "ape", "phangorn", "msa", "bluster")
+              "patchwork", "vegan", "ggplot2", "tidyverse", "miaQIIME2", "ape", "phangorn", "msa", "bluster")
 
 for (pkg in packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -73,10 +73,10 @@ library(tidyverse)
 
 ```
 
-##First we import our data:
+##First we import our data and have a look at it:
 ```{r}
 featureTableFile <- "data2/table.qza"
-taxonomyTableFile <- "data/taxonomy.qza"
+taxonomyTableFile <- "data2/taxonomy.qza"
 sampleMetaFile <- "data2/metadata.tsv"
 phyTreeFile <- "data2/16s_rooted_tree.qza"
 
@@ -88,5 +88,12 @@ tse <- importQIIME2(
 )
 
 tse
+print(tse)
+```
+
+##Then we plot a basic abundance plot:
+```{r}
+p_class_basic <- plotAbundance(tse, assay.type="counts", group = "class")
+print(p_class_basic)
 ```
 
