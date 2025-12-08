@@ -97,3 +97,9 @@ p_class_basic <- plotAbundance(tse, assay.type="counts", group = "class")
 print(p_class_basic)
 ```
 
+##Improving the plot
+Since this plot is visually not very appealing and hard to compell, we try to improve it and make it more user-friendly: 
+```{r}
+
+```
+
