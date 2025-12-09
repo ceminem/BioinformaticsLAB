@@ -46,8 +46,8 @@ knitr::write_bib(c("TreeSummarizedExperiment", "scater", "mia", "miaViz",
 
 ```
 \newpage
-#Part One: Microbiome (Taxonomic) Analysis
-##Installing Required Packages (if not already installed):
+# Part One: Microbiome (Taxonomic) Analysis
+## Installing Required Packages (if not already installed):
 
 ```{r install_packages, eval=FALSE}
 packages <- c("TreeSummarizedExperiment", "scater", "mia", "miaViz", 
@@ -68,7 +68,7 @@ for (pkg in packages) {
 }
 ```
 
-##Then load the required packages:
+## Then load the required packages:
 ```{r load_libraries, eval=FALSE}
 library(scater)
 library(mia)
@@ -82,7 +82,7 @@ library(msa)
 ```
 
 
-##First we import our data and have a look at it:
+## First we import our data and have a look at it:
 The data is taken from the TUGraz TeachCenter Course: Laboratory Course Bioninformatics/Metagenomics
 ```{r}
 featureTableFile <- "data2/table.qza"
@@ -101,7 +101,7 @@ tse
 print(tse)
 ```
 
-##Then we plot a basic abundance plot:
+## Then we plot a basic abundance plot:
 ```{r}
 p_class_basic <- plotAbundance(tse, assay.type="counts", group = "class")
 print(p_class_basic)
@@ -111,7 +111,7 @@ The basic plot, while informative, is challenging to interpret due to:
 - All samples grouped together without clear visual distinction
 - Difficulty in comparing treatment effects
 
-##Improvements:
+## Improvements:
 Since this plot seems rather difficult to interpret, we will change a few parameters to hopefully make it more readable:
 ```{r}
 p_class <- plotAbundance(tse, assay.type="counts", group = "class", 
@@ -140,7 +140,7 @@ ggsave("figures/class_level_abundance.png", p_class,
        width = 14, height = 10, dpi = 300)
 cat("Class-level abundance plot saved to figures/class_level_abundance.png\n")
 ```
-##Interpretation:
+## Interpretation:
 
 - The faceted view reveals that **Environment has a stronger effect than Genotype** on bacterial class composition
 - Control environments (e.g., natural seawater) consistently show greater bacterial diversity and abundance across classes
@@ -148,8 +148,8 @@ cat("Class-level abundance plot saved to figures/class_level_abundance.png\n")
 - Both genotypes show similar response patterns to environmental changes, suggesting that the host genotype has a minor role compared to the external environment
 
 
-#Statistics
-##Alpha diversity
+# Statistics
+## Alpha diversity
 For further statistical analysis, we need to add alpha diversity values. First, we add the alpha diversity values and display them:
 ```{r add_alpha_diversity}
 index <- c("coverage", "inverse_simpson", "gini", "shannon_diversity")
@@ -187,8 +187,8 @@ Alpha diversity measures quantify microbial community diversity within individua
 
 As we added the alpha diversity, we can proceed with performing the statistical tests:
 
-##Statistical Testing
-###Genotype significance
+## Statistical Testing
+### Genotype significance
 First, we want to have a look at the genotype:
 ```{r}
 p_shannon_genotype <- plotColData(tse, "shannon_diversity", "Genotype",
@@ -237,7 +237,7 @@ cat("AIMS4 mean Shannon diversity:", round(aims4_mean, 3), "\n")
 cat("Difference:", round(abs(aims1_mean - aims4_mean), 3), "\n")
 ```
 
-###Environmental significance
+### Environmental significance
 After comparing the genotype, we also want to have a look at the environment:
 ```{r}
 p_shannon_environment <- plotColData(tse, "shannon_diversity", "Environment",
@@ -310,8 +310,8 @@ p_shannon <- plotColData(tse, "shannon_diversity", "Environment",
 p_shannon
 ```
 
-#Discussion
-##Environment Effect Results:
+# Discussion
+## Environment Effect Results:
 
 All four alpha diversity measures show **statistically significant differences** between Control and Sterile environments (all p-values < 0.05):
 
@@ -334,7 +334,7 @@ The consistency across all indices provides strong evidence that the environment
 | **Dominance** | Inverse Simpson highest in Control (less dominated by single species) |
 | **Overall Pattern** | Convergent evidence: Environment is the dominant driver |
 
-##Genotype Effect Results:
+## Genotype Effect Results:
 
 No statistically significant differences detected between AIMS1 and AIMS4 genotypes for any diversity measure (all p-values > 0.05). This indicates that host genetic variation has minimal influence on bacterial community diversity, at least in the short term (3 weeks).
 
@@ -348,12 +348,12 @@ The strong environmental effect and weak genotype effect suggest that:
 4. **Evolutionary implications:** Under chronic stress, genotype effects might emerge, but acutely, the environment overrides genetic differences
 
 
-#Part Two: Protein Folding prediction
+# Part Two: Protein Folding prediction
 The FAP results from the BLAST search origin from the automated BLAST search code from Task_1, which will not be displayed here again.
 The sequences from the original publication were retrieved from TUGraz TeachCenter/Course/LabouratoryCourseBioinformatics/Fatty_acid_photodecarboxylase.
 In the following section, we will extract one sequence from each FASTA-file and predict a protein structure using AlphaFold. Further, we want to analyze it graphically using PyMol.
 
-##Sequence retrival from publication and BLAST search:
+## Sequence retrival from publication and BLAST search:
 First, we extract two sequences (one from each file) and save them as a single sequence FASTA file:
 
 ```{r}
@@ -388,4 +388,4 @@ if (nchar(fasta_content) > 300) {
 
 \newpage
 
-#References
+# References
