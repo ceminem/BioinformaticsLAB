@@ -2,7 +2,7 @@
 title: "Task 2: Microbiome Analysis and Protein Structure Prediction"
 author: 'Simon Safron [Mn: 11923407], Alexander Veith [Mn: 12122739], Miriam Überbacher [Mn:01627576]'
 date: "`r Sys.Date()`"
-bibliography: packages.bib
+bibliography: packages2.bib
 nocite: '@*'
 output:
   html_document:
@@ -30,6 +30,16 @@ knitr::opts_chunk$set(
   fig.align = "center",
   fig.pos = "H"
 )
+
+# Load required libraries FIRST
+library(qiime2R)
+library(scater)
+library(mia)
+library(miaViz)
+library(patchwork)
+library(vegan)
+library(ggplot2)
+library(tidyverse)
 
 knitr::write_bib(c("TreeSummarizedExperiment", "scater", "mia", "miaViz", 
               "patchwork", "vegan", "ggplot2", "tidyverse", "ape", "phangorn", "msa", "miaQIIME2"), file = 'packages2.bib')
@@ -60,18 +70,6 @@ for (pkg in packages) {
 devtools::install_github("jbisanz/qiime2R")
 ```
 
-
-##Then load the required packages:
-```{r load_libraries, eval=FALSE}
-library(scater)
-library(mia)
-library(miaViz)
-library(patchwork)
-library(vegan)
-library(ggplot2)
-library(tidyverse)
-library(qiime2R)
-```
 
 ##First we import our data and have a look at it:
 The data is taken from the TUGraz TeachCenter Course: Laboratory Course Bioninformatics/Metagenomics
@@ -207,6 +205,8 @@ For the means of this course, we tried to deepen the analysis a bit:
 
 ```{r}
 # Student's t-test for genotype
+diversity_measures <- c("shannon_diversity", "faith_diversity", "coverage", 
+                        "inverse_simpson", "gini")
 ttest_genotype_shannon <- t.test(shannon_diversity ~ Genotype, col_dat)
 print(ttest_genotype_shannon)
 
@@ -351,4 +351,4 @@ Since this plot is visually not very appealing and hard to compell, we try to im
 
 ```
 
->>>>>>> 675e61666263a7b3aeb533ff6d3fe0711caa8a23
+
