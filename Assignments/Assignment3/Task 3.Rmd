@@ -12,7 +12,7 @@ output:
     toc_depth: 2
     number_sections: true
     fig_width: 7
-    fig_height: 5
+    fig_height: 8
     fig_caption: true
     keep_tex: false
   html_document:
@@ -308,7 +308,7 @@ library(DESeq2)
 ### load the data with read delim, because it is tab seperated
 annotatedRawCounts <- read_delim("Counts_raw.tsv")
 
-head(annotatedRawCounts)
+#head(annotatedRawCounts)
 
 annotatedRawCounts <- annotatedRawCounts  %>% 
   column_to_rownames(var = "ID")
@@ -510,7 +510,83 @@ print(c(most_down$log2foldChange, most_down$foldChange, most_down$gene))
 
 **Answer:** For a comprehensive comparison, we can do this manually by thinking of how the LFC is defined. Since it's a logarithmic function with base 2, we can calculate the FoldChange: FC = 2^LFC and compare the results manually. For faster and automated calculation, one may use the code above, which takes the data from the DESeq dataset for treated and untreated WT and calculates the FC.
 Gene *ytiD* is 451.1 times higher transcribed than in untreated WT.
-Gene *btsT* is 
+Gene *btsT* is 217.4 times lower transcribed than in untreated WT.
+
+c)  Which of the genes shows the most significant deregulation (the lowest p-value)?
+
+```{r}
+min_pvalue_idx <- which.min(res_df$pvalue)
+gene_min_pvalue <- res_df[min_pvalue_idx, ]
+
+gene_id_sign <- gene_min_pvalue$ID
+gene_name_sign <- annotations[gene_id_sign, "gene"]
+
+most_sign <- gene_min_pvalue
+most_sign$gene <- gene_name_sign
+
+print(c(gene_min_pvalue$pvalue, most_sign$gene))
+```
+
+**Answer:** The gene with the lowest p-value (the most significant deregulation): *fliM* with a **p-value = 5.66e-124**.
+
+## Dotplot
+
+a)  Which is the most significantly enriched GO term ?
+
+```{r, echo=FALSE}
+dotplot(orBP, title="All deregulated genes", orderBy = "p.adjust", font.size = 6)
+#ggsave("figs/All deregulated genes p_adj.png", width = 12, height = 8)
+dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "p.adjust", font.size = 6)
+#ggsave("figs/All downregulated genes p_adj.png", width = 12, height = 8)
+dotplot(orUpBP, title="All significantly upregulated genes", orderBy = "p.adjust", font.size = 6)
+#ggsave("figs/All upregulated genes p_adj.png", width = 12, height = 8)
+```
+
+a)  Which is the most significantly enriched GO term in terms of upregulated genes?
+
+**Answer:** By looking at the graphs,which are sorted by adjusted p-values, we can see that the **genes for response to starvation** have the lowest p-value, therefore are the most significant upregulated GO term.
+
+
+
+b)  Which is the most significantly enriched GO term in terms of downregulated genes?
+
+**Answer:** By looking at the graphs,which are sorted by adjusted p-values, we can see that the **genes for iron import into the cell** have the lowest p-value, therefore are the most significant downregulated GO term.
+
+c)  Which of the shown GO terms has the highest GeneRatio ?
+
+```{r, echo=FALSE}
+dotplot(orDownBP, title="All significantly downregulated genes", orderBy="GeneRatio", font.size = 6)
+#ggsave("figs/All downregulated genes GeneRatio .png", width = 12, height = 8)
+```
+
+**Answer:** By looking at the graphs,which are sorted by GeneRatio, we can see that **a gene cluster with mobility functions like cell motility or flagellum-dependent cell motility** rank highest in terms of GeneRatio.
+
+d)  Which of the shown GO terms has the highest Count ?
+
+```{r, echo=FALSE}
+dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "Counts", font.size = 6)
+#ggsave("figs/All downregulated genes Counts .png", width = 12, height = 8, bg="white")
+```
+
+**Answer:** By looking at the graphs,which are sorted by Counts, we can see that **the same gene cluster with mobility functions like cell motility or flagellum-dependent cell motility** rank also highest in terms of Counts.
+
+## Clustering by GO relations
+
+a)  How many clusters can you identify when showing 10, 20, and 30 categories?
+
+```{r}
+enrichedBP <- enrichplot::pairwise_termsim(orUpBP)
+emapplot(enrichedBP, showCategory = 30, node_label="none")
+ggsave("figs/enr_plot_group .png", width = 14, height = 12, bg="white")
+
+#If the parameter group is set TRUE, one can see a grouping
+#emapplot(enrichedBP, showCategory = x, node_label="none", group=TRUE)
+```
+**Answer:** For easier counting, the node labels were removed using nodel_label="none". 
+
+For 10 Categories, we can count 3 clusters.
+For 20 Categories, we can count 4 clusters.
+For 30 Categories, we can count 5 clusters.
 
 \newpage
 
