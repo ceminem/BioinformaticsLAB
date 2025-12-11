@@ -460,7 +460,7 @@ knitr::kable(orUpBP_df,
 
 a)  Which is the most down-regulated gene and which is the most up-regulated gene, in terms of LFC?
 
-```{r}
+```{r, fig.cap="Vulcano plot", fig.height=8, out.width="80%", fig.align="center"}
 # Set a boolean column for significance
 DESeq2ResultsDF$significant <- ifelse(!is.na(DESeq2ResultsDF$padj) & DESeq2ResultsDF$padj < .05 , T, F)
 
@@ -471,7 +471,7 @@ EnhancedVolcano(DESeq2ResultsDF,
                 lab =  DESeq2ResultsDF$gene,
                 x = 'log2FoldChange',
                 y = 'padj',
-                pCutoff = 0.05, xlim = (0.1), ylim = (0.6))
+                pCutoff = 0.05)
 
 
 #show the entry with the highest log2FoldChange
@@ -537,15 +537,15 @@ print(c(gene_min_pvalue$pvalue, most_sign$gene))
 
 a)  Which is the most significantly enriched GO term ?
 
-```{r, echo=FALSE, fig.cap="All deregulated genes", fig.height=9, fig.align="center"}
+```{r, echo=FALSE, fig.cap="All deregulated genes", fig.height=3.5, fig.align="center"}
 dotplot(orBP, title="All deregulated genes", orderBy = "p.adjust", font.size = 6)
 #ggsave("figs/All deregulated genes p_adj.png", width = 12, height = 8)
 ```
-```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=9, fig.align="center"}
+```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=3.5, fig.align="center"}
 dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "p.adjust", font.size = 6)
 #ggsave("figs/All downregulated genes p_adj.png", width = 12, height = 8)
 ```
-```{r, echo=FALSE, fig.cap="All significantly upregulated genes", fig.height=9, fig.align="center"}
+```{r, echo=FALSE, fig.cap="All significantly upregulated genes", fig.height=3.5, fig.align="center"}
 dotplot(orUpBP, title="All significantly upregulated genes", orderBy = "p.adjust", font.size = 6)
 #ggsave("figs/All upregulated genes p_adj.png", width = 12, height = 8)
 ```
@@ -562,7 +562,7 @@ b)  Which is the most significantly enriched GO term in terms of downregulated g
 
 c)  Which of the shown GO terms has the highest GeneRatio ?
 
-```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=9, fig.align="center"}
+```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=3.5, fig.align="center"}
 dotplot(orDownBP, title="All significantly downregulated genes", orderBy="GeneRatio", font.size = 6)
 #ggsave("figs/All downregulated genes GeneRatio .png", width = 9, height = 7)
 ```
@@ -571,7 +571,7 @@ dotplot(orDownBP, title="All significantly downregulated genes", orderBy="GeneRa
 
 d)  Which of the shown GO terms has the highest Count ?
 
-```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=9, fig.align="center"}
+```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=3.5, fig.align="center"}
 dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "Counts", font.size = 6)
 #ggsave("figs/All downregulated genes Counts .png", width = 9, height = 7, bg="white")
 ```
@@ -582,7 +582,7 @@ dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "Coun
 
 a)  How many clusters can you identify when showing 10, 20, and 30 categories?
 
-```{r, fig.cap="Enrichment plot with visual clustering for easier analyis"}
+```{r, fig.cap="Enrichment plot with visual clustering for easier analyis", fig.align='center', fig.height=4}
 #Setting group=TRUE also does a visual clustering with labels
 enrichedBP <- enrichplot::pairwise_termsim(orDownBP)
 emapplot(enrichedBP, showCategory = 30, node_label="group", layout=igraph::layout_with_kk)
@@ -591,6 +591,7 @@ emapplot(enrichedBP, showCategory = 30, node_label="group", layout=igraph::layou
 ggsave("figs/enr_plot_group .png", width = 10, height = 8, bg="white")
 
 ```
+
 **Answer:** For easier counting, the node labels were grouped using nodel_label="group". 
 
 1) For 10 Categories, we count 3 clusters.
