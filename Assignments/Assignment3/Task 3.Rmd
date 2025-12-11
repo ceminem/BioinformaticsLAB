@@ -22,6 +22,14 @@ output:
 fontsize: 11pt
 geometry: margin=1in
 ---
+```{r, include = FALSE}
+library(EnhancedVolcano)
+library(clusterProfiler)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(DESeq2)
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -285,12 +293,12 @@ tgt + Nickel: The tgt knock out stais the same but now Nickel is added. This sho
 # Part 2: Functional Analysis and Vizualisation
 ## Setup
 
-```{r, eval=FALSE}
-BiocManager::install(c("clusterProfiler"))
-install.packages("tidyverse")
+```{r}
+#BiocManager::install(c("clusterProfiler"))
+#install.packages("tidyverse")
 
-install.packages("devtools")
-devtools::install_github('kevinblighe/EnhancedVolcano')
+#install.packages("devtools")
+#devtools::install_github('kevinblighe/EnhancedVolcano')
 ```
 
 ```{r}
@@ -340,11 +348,8 @@ library(org.EcK12.eg.db)
 c)  List the different available keytypes/identifiers.
 
 ```{r}
-#gene names/identifiers
 genes <- annotations$gene
 head(genes,10)
-
-#View all available keytypes
 keytypes(org.EcK12.eg.db)
 ```
 
@@ -355,9 +360,6 @@ d)  Which of the keytypes/identifiers include the gene names given in the annota
 ```{r}
 keys <- keys(org.EcK12.eg.db, keytype = "SYMBOL")
 head(keys)
-
-#make sure our IDs are contained in the keys
-#prints the number of genes that are found within the keys
 sum(genes %in% keys)
 ```
 
@@ -370,19 +372,16 @@ sum(genes %in% keys)
 a)  How many significantly up- and downregulated genes are left, after applying the LFC cutoff?
 
 ```{r}
-# filter our results by padj and log2FoldChange
+
 res_up <- dplyr::filter(DESeq2ResultsDF, padj < 0.05 & log2FoldChange > 1)
 res_down <- dplyr::filter(DESeq2ResultsDF, padj < 0.05 & log2FoldChange < -1)
 
-# extract gene IDs for upregulated genes
 genes_up_id <- res_up$ID
 genes_up <- annotations[genes_up_id,"gene"]
 
-# extract gene names for downregulated genes
 genes_down_id <- res_down$ID
 genes_down <- annotations[genes_down_id,"gene"]
 
-# append both lists to get all deregulated genes
 genes_de <- c(genes_up,genes_down)
 
 length(genes_up)
@@ -429,8 +428,9 @@ print(n_BP_up)
 print(n_BP_down)
 
 ```
-
 **Answer:** There are in summary 100 GO terms deregulated, 59 up and 93 down. For a quick look into the first few results, take a look at the tables below.
+
+
 
 ```{r, echo=FALSE}
 orBP_df <- as.data.frame(orBP)[1:5, c("Description", "p.adjust", "Count")]
@@ -442,12 +442,16 @@ caption = "Overrepresented BP terms - All DE genes",
 format = "latex")
 
 knitr::kable(orUpBP_df,
-caption = "Overrepresented BP terms - Upregulated genes",
-format = "latex")
+             caption = "Overrepresented BP terms - Upregulated genes",
+             format  = "latex",
+             booktabs = TRUE) |>
+  kableExtra::kable_styling(latex_options = "HOLD_position")
 
-knitr::kable(orDownBP_df,
-caption = "Overrepresented BP terms - Downregulated genes",
-format = "latex")
+knitr::kable(orUpBP_df,
+             caption = "Overrepresented BP terms - Upregulated genes",
+             format  = "latex",
+             booktabs = TRUE) |>
+  kableExtra::kable_styling(latex_options = "HOLD_position")
 
 ```
 
@@ -467,7 +471,7 @@ EnhancedVolcano(DESeq2ResultsDF,
                 lab =  DESeq2ResultsDF$gene,
                 x = 'log2FoldChange',
                 y = 'padj',
-                pCutoff = 0.05)# + xlim(0,2.5) + ylim(0,10) you can further restrict the plot by setting limits on x an y axis
+                pCutoff = 0.05, xlim = (0.1), ylim = (0.6))
 
 
 #show the entry with the highest log2FoldChange
@@ -533,11 +537,15 @@ print(c(gene_min_pvalue$pvalue, most_sign$gene))
 
 a)  Which is the most significantly enriched GO term ?
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="All deregulated genes", fig.height=9, fig.align="center"}
 dotplot(orBP, title="All deregulated genes", orderBy = "p.adjust", font.size = 6)
 #ggsave("figs/All deregulated genes p_adj.png", width = 12, height = 8)
+```
+```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=9, fig.align="center"}
 dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "p.adjust", font.size = 6)
 #ggsave("figs/All downregulated genes p_adj.png", width = 12, height = 8)
+```
+```{r, echo=FALSE, fig.cap="All significantly upregulated genes", fig.height=9, fig.align="center"}
 dotplot(orUpBP, title="All significantly upregulated genes", orderBy = "p.adjust", font.size = 6)
 #ggsave("figs/All upregulated genes p_adj.png", width = 12, height = 8)
 ```
@@ -554,39 +562,62 @@ b)  Which is the most significantly enriched GO term in terms of downregulated g
 
 c)  Which of the shown GO terms has the highest GeneRatio ?
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=9, fig.align="center"}
 dotplot(orDownBP, title="All significantly downregulated genes", orderBy="GeneRatio", font.size = 6)
-#ggsave("figs/All downregulated genes GeneRatio .png", width = 12, height = 8)
+#ggsave("figs/All downregulated genes GeneRatio .png", width = 9, height = 7)
 ```
 
-**Answer:** By looking at the graphs,which are sorted by GeneRatio, we can see that **a gene cluster with mobility functions like cell motility or flagellum-dependent cell motility** rank highest in terms of GeneRatio.
+**Answer:** By looking at the graphs,which are sorted by GeneRatio, we can see that **gene terms with mobility functions like cell motility or flagellum-dependent cell motility** rank highest in terms of GeneRatio.
 
 d)  Which of the shown GO terms has the highest Count ?
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="All significantly downregulated genes", fig.height=9, fig.align="center"}
 dotplot(orDownBP, title="All significantly downregulated genes", orderBy = "Counts", font.size = 6)
-#ggsave("figs/All downregulated genes Counts .png", width = 12, height = 8, bg="white")
+#ggsave("figs/All downregulated genes Counts .png", width = 9, height = 7, bg="white")
 ```
 
-**Answer:** By looking at the graphs,which are sorted by Counts, we can see that **the same gene cluster with mobility functions like cell motility or flagellum-dependent cell motility** rank also highest in terms of Counts.
+**Answer:** By looking at the graphs,which are sorted by Counts, we can see that **the same gene terms with mobility functions like cell motility or flagellum-dependent cell motility** rank also highest in terms of Counts.
 
 ## Clustering by GO relations
 
 a)  How many clusters can you identify when showing 10, 20, and 30 categories?
 
-```{r}
-enrichedBP <- enrichplot::pairwise_termsim(orUpBP)
-emapplot(enrichedBP, showCategory = 30, node_label="none")
-ggsave("figs/enr_plot_group .png", width = 14, height = 12, bg="white")
-
-#If the parameter group is set TRUE, one can see a grouping
-#emapplot(enrichedBP, showCategory = x, node_label="none", group=TRUE)
+```{r, fig.cap="Enrichment plot with visual clustering for easier analyis"}
+#Setting group=TRUE also does a visual clustering with labels
+enrichedBP <- enrichplot::pairwise_termsim(orDownBP)
+emapplot(enrichedBP, showCategory = 30, node_label="group", layout=igraph::layout_with_kk)
 ```
-**Answer:** For easier counting, the node labels were removed using nodel_label="none". 
+```{r, include=FALSE}
+ggsave("figs/enr_plot_group .png", width = 10, height = 8, bg="white")
 
-For 10 Categories, we can count 3 clusters.
-For 20 Categories, we can count 4 clusters.
-For 30 Categories, we can count 5 clusters.
+```
+**Answer:** For easier counting, the node labels were grouped using nodel_label="group". 
+
+1) For 10 Categories, we count 3 clusters.
+2) For 20 Categories, we count 4 clusters.
+3) For 30 Categories, we count 5 clusters.
+
+b)  What are in your opinion the main clusters and which processes are they related to?
+
+**Answer:** Enabling nodel_label="group" vizualises the different clusters. This clusters and a short biological explanation is represented below:
+
+
+
+1)  Iron anaerobic localization:
+    Under nickel exposure, iron metabolism is broadly perturbed, and several studies show transcriptional repression of iron uptake      and related functions as part of a protective response to prevent further metal overload and mismetallation of iron enzymes.         [@washington2019nickel][@semsey2006genetic] In this setting, this is represented by the shift away from pathways that include        iron transport.
+    
+2)  carbohydrate import transport:
+    Carbohydrate transport systems are major entry points for carbon and are under strong catabolite repression and stress               regulation. During metal stress, cells often reduce uptake and catabolism of some carbon sources, lowering metabolic flux and        thereby reducing production of reactive by‑products. Down‑regulation of carbohydrate import fits a program, in which only the        most efficient or stress‑compatible substrates are prioritized while others are transcriptionally repressed.                         [@sonnleitner2025comparative]
+    
+3)  amino sugar transport process:
+    Amino sugar uptake and utilization (e.g. N‑acetylglucosamine) for cell wall biosynthesis is a process that is energy‑intensive       and tightly adjusted to growth rate. Under metal stress and reduced growth, expression of transporters for alternative nutrients,     including amino sugars, is commonly repressed as part of a general reduction in anabolic activity. Thus, the observed                down‑regulation of amino sugar transport genes likely reflects both lower growth rate and a reprioritization of nutrient use         under nickel‑induced stress.[@sonnleitner2025comparative] [@khan2017biosorption]
+    
+4)  bacterial-type cell flagellum-dependent motility:
+    Flagella and motility are among the most expensive structures for bacteria to build and run and many stresses (metals,               antibiotics, nutrient limitation) trigger coordinated repression of flagellar gene expression. In addition, motile planktonic        growth is often disadvantageous under stress, while bbiofilm‑like states provide protection. Nickel, for example, can promote        biofilm formation in E. coli where non‑motile cells have a fitness advantage. Down‑regulation of flagellar genes is therefore        consistent with an adaptive shift from an energy‑intensive motile lifestyle towards a more stationary state.[@perrin2009nickel]       [@marques2023sublethal] [@lin2017microarray] [@benyoussef2022flagellar] [@khan2017biosorption]
+    
+5)  bacterial-type cell chemotaxis organization:
+    Chemotaxis systems coordinate gradient sensing and flagellar rotation; they are functionally coupled to motility and are             typically co‑regulated with flagellar genes. When flagellar assembly and rotation are repressed under metal or nutrient stress,      chemotaxis signal transduction becomes less useful and is often down‑regulated in parallel. The reduced expression of chemotaxis     and chemotaxis‑organization genes thus likely reflects this coordinated shut‑down of the motility module in favor of conserving      ATP and redirecting resources to metal detoxification and stress‑response pathways.[@lin2017microarray]
+    
 
 \newpage
 
